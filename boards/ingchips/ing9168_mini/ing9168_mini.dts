@@ -1,0 +1,11 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/dts-v1/;
+#include <ingchips/ing9168.dtsi>
+/ {
+	model = "INGCHIPS ING9168 Mini";
+	compatible = "ingchips,ing9168-mini";
+	chosen { zephyr,console = &uart0; zephyr,shell-uart = &uart0; };
+};
+&uart0 { status = "okay"; };
+&gpio0 { status = "okay"; };
+&gpio1 { status = "okay"; };

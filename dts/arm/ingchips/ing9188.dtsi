@@ -1,0 +1,77 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+#include <arm/armv7-m.dtsi>
+
+/ {
+	chosen { zephyr,flash = &flash0; zephyr,sram = &sram0; };
+	cpus {
+		#address-cells = <1>; #size-cells = <0>;
+		cpu0: cpu@0 {
+			compatible = "arm,cortex-m3"; device_type = "cpu"; reg = <0>;
+			clock-frequency = <12000000>;
+		};
+	};
+	sram0: memory@20000a50 { compatible = "mmio-sram"; reg = <0x20000a50 0xf5b0>; };
+	flash0: flash@26000 { compatible = "soc-nv-flash"; reg = <0x00026000 0x5a000>; };
+	soc {
+		compatible = "simple-bus";
+		uart0: serial@40020000 {
+			compatible = "ingchips,uart"; reg = <0x40020000 0x4c>;
+			clock-frequency = <12000000>; current-speed = <115200>; status = "disabled";
+		};
+		uart1: serial@40021000 {
+			compatible = "ingchips,uart"; reg = <0x40021000 0x4c>;
+			clock-frequency = <12000000>; current-speed = <115200>; status = "disabled";
+		};
+		gpio0: gpio@40000000 {
+			compatible = "ingchips,ing918-gpio"; reg = <0x40000000 0x78>;
+			gpio-controller; #gpio-cells = <2>; ngpios = <32>; status = "disabled";
+		};
+		i2c0: i2c@40010000 {
+			compatible = "ingchips,ing918-i2c";
+			reg = <0x40010000 0x1000>;
+			input-clock-frequency = <24000000>;
+			#address-cells = <1>; #size-cells = <0>;
+			status = "disabled";
+		};
+		i2c1: i2c@40012000 {
+			compatible = "ingchips,ing918-i2c";
+			reg = <0x40012000 0x1000>;
+			input-clock-frequency = <24000000>;
+			#address-cells = <1>; #size-cells = <0>;
+			status = "disabled";
+		};
+		spi0: spi@40060000 {
+			compatible = "ingchips,ing918-spi";
+			reg = <0x40060000 0x1000>;
+			input-clock-frequency = <48000000>;
+			#address-cells = <1>; #size-cells = <0>;
+			status = "disabled";
+		};
+		spi1: spi@40030000 {
+			compatible = "ingchips,ing918-spi";
+			reg = <0x40030000 0x1000>;
+			input-clock-frequency = <24000000>;
+			#address-cells = <1>; #size-cells = <0>;
+			status = "disabled";
+		};
+		pwm0: pwm@40011000 {
+			compatible = "ingchips,ing918-pwm";
+			reg = <0x40011000 0x1000>;
+			input-clock-frequency = <24000000>;
+			#pwm-cells = <3>;
+			status = "disabled";
+		};
+		rtc0: rtc@40040000 {
+			compatible = "ingchips,ing918-rtc";
+			reg = <0x40040000 0x1000>;
+			status = "disabled";
+		};
+		wdt0: watchdog@40001000 {
+			compatible = "ingchips,ing918-wdt";
+			reg = <0x40001000 0x1000>;
+			input-clock-frequency = <50000>;
+			status = "disabled";
+		};
+	};
+};
+&nvic { arm,num-irq-priority-bits = <3>; };

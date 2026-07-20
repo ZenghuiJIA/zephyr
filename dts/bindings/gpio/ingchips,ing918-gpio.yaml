@@ -1,0 +1,6 @@
+description: INGCHIPS ING918 GPIO controller
+compatible: "ingchips,ing918-gpio"
+include: [gpio-controller.yaml, base.yaml]
+properties:
+  reg:
+    required: true

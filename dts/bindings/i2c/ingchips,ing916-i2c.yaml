@@ -1,0 +1,10 @@
+description: ING916 I2C controller
+compatible: "ingchips,ing916-i2c"
+include: [i2c-controller.yaml, base.yaml]
+properties:
+  reg:
+    required: true
+  input-clock-frequency:
+    type: int
+    required: true
+

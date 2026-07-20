@@ -1,0 +1,9 @@
+description: ING916 dedicated PWM controller
+compatible: "ingchips,ing916-pwm"
+include: [pwm-controller.yaml, base.yaml]
+properties:
+  reg: {required: true}
+  input-clock-frequency: {type: int, required: true}
+  "#pwm-cells": {const: 3}
+pwm-cells: [channel, period, flags]
+

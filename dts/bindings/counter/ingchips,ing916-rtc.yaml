@@ -1,0 +1,6 @@
+description: ING916 always-on RTC counter
+compatible: "ingchips,ing916-rtc"
+include: base.yaml
+properties:
+  reg: {required: true}
+  reg-names: {required: true}

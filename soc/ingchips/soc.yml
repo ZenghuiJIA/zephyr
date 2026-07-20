@@ -1,0 +1,9 @@
+family:
+  - name: ingchips
+    series:
+      - name: ing916
+        socs:
+          - name: ing9168
+      - name: ing918
+        socs:
+          - name: ing9188

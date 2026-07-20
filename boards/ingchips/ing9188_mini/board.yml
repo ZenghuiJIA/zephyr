@@ -1,0 +1,6 @@
+board:
+  name: ing9188_mini
+  full_name: ING9188 Mini
+  vendor: ingchips
+  socs:
+    - name: ing9188

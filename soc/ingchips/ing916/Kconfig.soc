@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+config SOC_SERIES_ING916
+	bool
+	select SOC_FAMILY_INGCHIPS
+config SOC_ING9168
+	bool
+	select SOC_SERIES_ING916
+config SOC_SERIES
+	default "ing916" if SOC_SERIES_ING916
+config SOC
+	default "ing9168" if SOC_ING9168

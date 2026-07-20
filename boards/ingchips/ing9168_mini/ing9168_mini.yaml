@@ -1,0 +1,7 @@
+identifier: ing9168_mini
+name: ING9168 Mini
+type: mcu
+arch: arm
+toolchain: [zephyr, gnuarmemb]
+supported: [gpio, uart]
+vendor: ingchips

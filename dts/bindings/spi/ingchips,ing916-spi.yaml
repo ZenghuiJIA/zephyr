@@ -1,0 +1,7 @@
+description: ING916 SPI controller
+compatible: "ingchips,ing916-spi"
+include: [spi-controller.yaml, base.yaml]
+properties:
+  reg: {required: true}
+  input-clock-frequency: {type: int, required: true}
+

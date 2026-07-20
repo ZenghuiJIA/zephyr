@@ -1,0 +1,7 @@
+description: ING916 I2S controller
+compatible: "ingchips,ing916-i2s"
+include: [i2s-controller.yaml, base.yaml]
+properties:
+  reg: {required: true}
+  input-clock-frequency: {type: int, required: true}
+

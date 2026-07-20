@@ -344,6 +344,7 @@ inet-tek	Shenzhen iNet Mobile Internet Technology Co., Ltd
 infineon	Infineon Technologies
 inforce	Inforce Computing
 ingenic	Ingenic Semiconductor
+ingchips	Ingchips Technology Co., Ltd.
 innblue	innblue UG
 innolux	Innolux Corporation
 inside-secure	INSIDE Secure

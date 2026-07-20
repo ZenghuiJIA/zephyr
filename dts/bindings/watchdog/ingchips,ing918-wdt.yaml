@@ -1,0 +1,6 @@
+description: ING918 timer watchdog
+compatible: "ingchips,ing918-wdt"
+include: base.yaml
+properties:
+  reg: {required: true}
+  input-clock-frequency: {type: int, required: true}

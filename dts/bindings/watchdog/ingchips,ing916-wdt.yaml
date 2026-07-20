@@ -1,0 +1,6 @@
+description: ING916 watchdog
+compatible: "ingchips,ing916-wdt"
+include: base.yaml
+properties:
+  reg: {required: true}
+  reg-names: {required: true}
