@@ -1,0 +1,5 @@
+config WDT_INGCHIPS
+	bool "INGCHIPS watchdog"
+	default y
+	depends on DT_HAS_INGCHIPS_ING916_WDT_ENABLED || DT_HAS_INGCHIPS_ING918_WDT_ENABLED
+

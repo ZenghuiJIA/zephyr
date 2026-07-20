@@ -1,0 +1,9 @@
+# Copyright (c) 2026 INGCHIPS
+# SPDX-License-Identifier: Apache-2.0
+
+config ADC_INGSOC
+	bool "INGCHIPS ING916 ADC driver"
+	default y
+	depends on DT_HAS_INGCHIPS_ING916_ADC_ENABLED
+	help
+	  Enable the register-level ADC driver for ING916 series SoCs.

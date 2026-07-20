@@ -1,0 +1,10 @@
+config SPI_INGCHIPS
+	bool "INGCHIPS SPI controller"
+	default y
+	depends on DT_HAS_INGCHIPS_ING916_SPI_ENABLED || DT_HAS_INGCHIPS_ING918_SPI_ENABLED
+
+config SPI_INGCHIPS_TRANSFER_TIMEOUT_MS
+	int "Polling transfer timeout in milliseconds"
+	default 500
+	depends on SPI_INGCHIPS
+	range 1 60000
