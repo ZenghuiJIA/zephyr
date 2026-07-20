@@ -4,4 +4,3 @@ include: [spi-controller.yaml, base.yaml]
 properties:
   reg: {required: true}
   input-clock-frequency: {type: int, required: true}
-

@@ -2,4 +2,3 @@ config PWM_INGCHIPS
 	bool "INGCHIPS PWM controller"
 	default y
 	depends on DT_HAS_INGCHIPS_ING916_PWM_ENABLED || DT_HAS_INGCHIPS_ING918_PWM_ENABLED
-

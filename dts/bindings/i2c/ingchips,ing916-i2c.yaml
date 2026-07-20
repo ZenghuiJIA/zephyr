@@ -7,4 +7,3 @@ properties:
   input-clock-frequency:
     type: int
     required: true
-

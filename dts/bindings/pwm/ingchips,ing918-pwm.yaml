@@ -6,4 +6,3 @@ properties:
   input-clock-frequency: {type: int, required: true}
   "#pwm-cells": {const: 3}
 pwm-cells: [channel, period, flags]
-
