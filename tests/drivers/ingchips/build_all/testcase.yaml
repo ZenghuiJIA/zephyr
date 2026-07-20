@@ -1,0 +1,13 @@
+tests:
+  drivers.ingchips.build_all.ing9168:
+    build_only: true
+    platform_allow:
+      - ing9168_mini/ing9168
+    extra_args:
+      - DTC_OVERLAY_FILE=ing9168.overlay
+  drivers.ingchips.build_all.ing9188:
+    build_only: true
+    platform_allow:
+      - ing9188_mini/ing9188
+    extra_args:
+      - DTC_OVERLAY_FILE=ing9188.overlay

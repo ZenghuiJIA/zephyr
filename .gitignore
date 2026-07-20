@@ -14,7 +14,7 @@
 # Emacs
 \#*\#
 
-build*/
+/build*/
 !doc/build/
 !scripts/build
 !share/sysbuild/build
@@ -57,6 +57,7 @@ doc/doc.warnings
 .envrc
 .vscode
 hide-defaults-note
+ingchips-sdk.cmake
 venv
 .venv
 .envrc
