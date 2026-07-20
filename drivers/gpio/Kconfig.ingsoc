@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config GPIO_INGSOC
+	bool "INGCHIPS register-level GPIO driver"
+	default y
+	depends on DT_HAS_INGCHIPS_ING916_GPIO_ENABLED || DT_HAS_INGCHIPS_ING918_GPIO_ENABLED
+	help
+	  GPIO driver using direct register access instead of FWlib.
