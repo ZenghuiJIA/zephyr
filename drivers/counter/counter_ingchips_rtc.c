@@ -6,6 +6,10 @@
 #include <zephyr/sys/sys_io.h>
 #include <platform_api.h>
 
+#if defined(CONFIG_SOC_SERIES_ING20)
+#define PLATFORM_CB_IRQ_RTC PLATFORM_CB_IRQ_32K_CNT
+#endif
+
 enum ing_rtc_layout { ING_RTC_916, ING_RTC_918 };
 struct ing_rtc_config {
 	struct counter_config_info info;

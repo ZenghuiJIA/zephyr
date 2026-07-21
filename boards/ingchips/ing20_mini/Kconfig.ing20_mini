@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_ING20_MINI
+	select SOC_ING20XX

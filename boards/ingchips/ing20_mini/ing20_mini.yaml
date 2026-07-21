@@ -1,0 +1,7 @@
+identifier: ing20_mini
+name: ING20 Mini
+type: mcu
+arch: arm
+toolchain: [zephyr, gnuarmemb]
+supported: [gpio, uart]
+vendor: ingchips

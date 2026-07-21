@@ -1,0 +1,9 @@
+&gpio0 { status = "okay"; };
+&adc0 { status = "okay"; };
+&i2c0 { status = "okay"; };
+&spi0 { status = "okay"; };
+&spi1 { status = "okay"; };
+&pwm0 { status = "okay"; };
+&i2s0 { status = "okay"; };
+&rtc0 { status = "okay"; };
+&wdt0 { status = "okay"; };

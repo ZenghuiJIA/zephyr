@@ -1,3 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
 rsource "ing916/Kconfig.soc"
+rsource "ing20/Kconfig.soc"
 rsource "ing918/Kconfig.soc"

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_SERIES_ING20
+	bool
+	select SOC_FAMILY_INGCHIPS
+
+config SOC_ING20XX
+	bool
+	select SOC_SERIES_ING20
+
+config SOC_SERIES
+	default "ing20" if SOC_SERIES_ING20
+
+config SOC
+	default "ing20xx" if SOC_ING20XX

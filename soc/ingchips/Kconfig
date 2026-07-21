@@ -8,4 +8,5 @@ config INGCHIPS_PLATFORM
 	default y
 
 rsource "ing916/Kconfig"
+rsource "ing20/Kconfig"
 rsource "ing918/Kconfig"

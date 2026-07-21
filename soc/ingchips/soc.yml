@@ -7,3 +7,6 @@ family:
       - name: ing918
         socs:
           - name: ing9188
+      - name: ing20
+        socs:
+          - name: ing20xx

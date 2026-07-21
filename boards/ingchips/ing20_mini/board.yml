@@ -1,0 +1,6 @@
+board:
+  name: ing20_mini
+  full_name: ING20 Mini
+  vendor: ingchips
+  socs:
+    - name: ing20xx
