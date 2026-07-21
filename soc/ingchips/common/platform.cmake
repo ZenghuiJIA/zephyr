@@ -117,3 +117,24 @@ set_property(GLOBAL PROPERTY INGCHIPS_PLATFORM_BIN "${INGCHIPS_PLATFORM_BIN}")
 set_property(GLOBAL PROPERTY INGCHIPS_PLATFORM_ROM_BASE "${INGCHIPS_META_ROM_BASE}")
 set_property(GLOBAL PROPERTY INGCHIPS_APPLICATION_FLASH_BASE "${INGCHIPS_META_APP_BASE}")
 configure_file("${INGCHIPS_PLATFORM_BIN}" "${ZEPHYR_BINARY_DIR}/platform.bin" COPYONLY)
+
+set(INGCHIPS_PLATFORM_HEX "${ZEPHYR_BINARY_DIR}/platform.hex")
+set(INGCHIPS_MERGED_HEX "${ZEPHYR_BINARY_DIR}/${KERNEL_NAME}_merged.hex")
+set_property(GLOBAL APPEND PROPERTY extra_post_build_commands
+  COMMAND ${CMAKE_OBJCOPY}
+    -I binary -O ihex
+    --change-addresses=${INGCHIPS_META_ROM_BASE}
+    "${ZEPHYR_BINARY_DIR}/platform.bin"
+    "${INGCHIPS_PLATFORM_HEX}"
+  COMMAND ${PYTHON_EXECUTABLE}
+    "${ZEPHYR_BASE}/scripts/build/mergehex.py"
+    -o "${INGCHIPS_MERGED_HEX}"
+    "${INGCHIPS_PLATFORM_HEX}"
+    "${ZEPHYR_BINARY_DIR}/${KERNEL_HEX_NAME}")
+set_property(GLOBAL APPEND PROPERTY extra_post_build_byproducts
+  "${INGCHIPS_PLATFORM_HEX}"
+  "${INGCHIPS_MERGED_HEX}")
+
+# Make west flash program the platform and Zephyr application in one operation.
+set_target_properties(runners_yaml_props_target PROPERTIES
+  hex_file "${KERNEL_NAME}_merged.hex")

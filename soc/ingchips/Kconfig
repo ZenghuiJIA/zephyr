@@ -2,6 +2,7 @@
 
 config SOC_FAMILY_INGCHIPS
 	bool
+	select BUILD_OUTPUT_HEX
 
 config INGCHIPS_PLATFORM
 	bool "INGCHIPS platform firmware integration"
