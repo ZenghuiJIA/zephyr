@@ -1,0 +1,14 @@
+sample:
+  name: INGchips dual LED blinky
+  description: Blink the LEDs connected to IO21 and IO22 through the Zephyr GPIO API.
+common:
+  build_only: true
+  integration_platforms:
+    - ing20_mini/ing20xx
+  platform_allow:
+    - ing20_mini/ing20xx
+  tags:
+    - gpio
+    - led
+tests:
+  sample.boards.ingchips.led_blinky: {}

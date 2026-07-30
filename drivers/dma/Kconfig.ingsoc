@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config DMA_INGCHIPS
+	bool "INGCHIPS ING916/ING20 DMA controller"
+	default y
+	depends on DT_HAS_INGCHIPS_DMA_ENABLED
+	depends on SOC_SERIES_ING916 || SOC_SERIES_ING20
+	depends on !DMA_64BIT
+	help
+	  Enable the register-level DMA controller driver found in ING916 and
+	  ING20 SoCs. The driver supports single-block transfers between memory
+	  and peripherals.

@@ -30,6 +30,9 @@ set(INGCHIPS_META_JSON "${INGCHIPS_BUNDLE_DIR}/meta.json")
 set(INGCHIPS_PLATFORM_BIN "${INGCHIPS_BUNDLE_DIR}/platform.bin")
 set(INGCHIPS_STARTUP_DIR "${ING_SDK_BASE}/src/StartUP/${INGCHIPS_FAMILY}")
 
+zephyr_sources_ifdef(CONFIG_INGCHIPS_PLATFORM_OS
+  "${CMAKE_CURRENT_LIST_DIR}/platform_os.c")
+
 foreach(required_file IN ITEMS
     "${INGCHIPS_STARTUP_DIR}/ingsoc.h"
     "${INGCHIPS_APIS_JSON}"
@@ -96,12 +99,21 @@ if(NOT DEFINED ingchips_flash_path OR NOT DEFINED ingchips_sram_path)
 endif()
 dt_reg_addr(ingchips_dts_flash_base PATH "${ingchips_flash_path}")
 dt_reg_addr(ingchips_dts_sram_base PATH "${ingchips_sram_path}")
-if(NOT ingchips_dts_flash_base EQUAL INGCHIPS_META_APP_BASE)
+math(EXPR ingchips_dts_flash_base_dec "${ingchips_dts_flash_base}"
+  OUTPUT_FORMAT DECIMAL)
+math(EXPR ingchips_meta_app_base_dec "${INGCHIPS_META_APP_BASE}"
+  OUTPUT_FORMAT DECIMAL)
+math(EXPR ingchips_dts_sram_base_dec "${ingchips_dts_sram_base}"
+  OUTPUT_FORMAT DECIMAL)
+math(EXPR ingchips_application_ram_base_dec "${ingchips_application_ram_base}"
+  OUTPUT_FORMAT DECIMAL)
+if(NOT "${ingchips_dts_flash_base_dec}" STREQUAL "${ingchips_meta_app_base_dec}")
   message(FATAL_ERROR
     "DTS flash base ${ingchips_dts_flash_base} does not match SDK application "
     "base ${INGCHIPS_META_APP_BASE}")
 endif()
-if(NOT ingchips_dts_sram_base EQUAL ingchips_application_ram_base)
+if(NOT "${ingchips_dts_sram_base_dec}" STREQUAL
+    "${ingchips_application_ram_base_dec}")
   message(FATAL_ERROR
     "DTS SRAM base ${ingchips_dts_sram_base} does not match SDK application "
     "RAM base ${ingchips_application_ram_base}")

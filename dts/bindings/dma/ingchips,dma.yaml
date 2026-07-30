@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: INGCHIPS ING916 and ING20 DMA controller
+
+compatible: "ingchips,dma"
+
+include: dma-controller.yaml
+
+properties:
+  reg:
+    required: true
+
+  reg-names:
+    required: true
+
+  dma-channels:
+    const: 8
+
+  dma-requests:
+    const: 16
+
+  dma-buf-addr-alignment:
+    const: 1
+
+  dma-buf-size-alignment:
+    const: 1
+
+  dma-copy-alignment:
+    const: 1
+
+  "#dma-cells":
+    const: 2
+    description: |
+      The first cell is the DMA channel. The second cell is the peripheral
+      request selector. Request selectors 0 through 7 are peripheral-to-memory
+      sources, while selectors 8 through 15 are memory-to-peripheral targets.
+
+dma-cells:
+  - channel
+  - request

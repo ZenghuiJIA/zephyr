@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/sys_io.h>
 #include <zephyr/sys/util.h>
+#include <clock_control.h>
 
 #define UART_DR 0x00
 #define UART_RSR 0x04
@@ -15,6 +16,7 @@
 #define UART_FBRD 0x28
 #define UART_LCR_H 0x2c
 #define UART_CR 0x30
+#define UART_DMACR 0x48
 #define UART_FR_RXFE BIT(4)
 #define UART_FR_TXFF BIT(5)
 #define UART_LCR_H_FEN BIT(4)
@@ -22,11 +24,16 @@
 #define UART_CR_UARTEN BIT(0)
 #define UART_CR_TXE BIT(8)
 #define UART_CR_RXE BIT(9)
+#define UART_DMACR_RX_ENABLE BIT(0)
+#define UART_DMACR_TX_ENABLE BIT(1)
 
 struct uart_ingsoc_config {
 	mem_addr_t base;
 	uint32_t clock_frequency;
 	uint32_t baudrate;
+	bool dma_rx;
+	bool dma_tx;
+	uint8_t instance;
 };
 
 static inline uint32_t reg_read(mem_addr_t address)
@@ -77,6 +84,8 @@ static int uart_ingsoc_init(const struct device *dev)
 	uint32_t integer_divisor;
 	uint32_t fractional_divisor;
 
+	ingchips_clock_enable(cfg->instance == 0U ? INGCHIPS_CLK_UART0 : INGCHIPS_CLK_UART1);
+
 	if (cfg->baudrate == 0U || cfg->clock_frequency < (16U * cfg->baudrate)) {
 		return -EINVAL;
 	}
@@ -87,6 +96,8 @@ static int uart_ingsoc_init(const struct device *dev)
 	reg_write(integer_divisor, cfg->base + UART_IBRD);
 	reg_write(fractional_divisor, cfg->base + UART_FBRD);
 	reg_write(UART_LCR_H_FEN | UART_LCR_H_WLEN_8, cfg->base + UART_LCR_H);
+	reg_write((cfg->dma_rx ? UART_DMACR_RX_ENABLE : 0U) |
+		  (cfg->dma_tx ? UART_DMACR_TX_ENABLE : 0U), cfg->base + UART_DMACR);
 	reg_write(UART_CR_UARTEN | UART_CR_TXE | UART_CR_RXE, cfg->base + UART_CR);
 	return 0;
 }
@@ -102,6 +113,11 @@ static DEVICE_API(uart, uart_ingsoc_api) = {
 		.base = DT_INST_REG_ADDR(inst),                               \
 		.clock_frequency = DT_INST_PROP(inst, clock_frequency),       \
 		.baudrate = DT_INST_PROP(inst, current_speed),                 \
+		.dma_rx = IS_ENABLED(CONFIG_DMA_INGCHIPS) &&                    \
+			  DT_DMAS_HAS_NAME(DT_DRV_INST(inst), rx),              \
+		.dma_tx = IS_ENABLED(CONFIG_DMA_INGCHIPS) &&                    \
+			  DT_DMAS_HAS_NAME(DT_DRV_INST(inst), tx),              \
+		.instance = inst,                                                \
 	};                                                                      \
 	DEVICE_DT_INST_DEFINE(inst, uart_ingsoc_init, NULL, NULL,               \
 			      &uart_ingsoc_config_##inst, PRE_KERNEL_1,         \

@@ -5,6 +5,7 @@
 #include <zephyr/drivers/spi.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/sys_io.h>
+#include <clock_control.h>
 #define LOG_LEVEL CONFIG_SPI_LOG_LEVEL
 LOG_MODULE_REGISTER(spi_ingchips);
 #include "spi_context.h"
@@ -165,7 +166,9 @@ static int ing_spi_release(const struct device *dev, const struct spi_config *cf
 
 static int ing_spi_init(const struct device *dev)
 {
+	const struct ing_spi_cfg *c = dev->config;
 	struct ing_spi_data *d = dev->data;
+	ingchips_clock_enable(c->base == 0x40060000U ? INGCHIPS_CLK_SPI0 : INGCHIPS_CLK_SPI1);
 	spi_context_unlock_unconditionally(&d->ctx);
 	return 0;
 }

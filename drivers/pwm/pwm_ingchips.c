@@ -4,6 +4,7 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/spinlock.h>
 #include <zephyr/sys/sys_io.h>
+#include <clock_control.h>
 
 enum ing_pwm_layout { ING_PWM_916, ING_PWM_918 };
 struct ing_pwm_config { uintptr_t base; uint32_t clock; enum ing_pwm_layout layout; };
@@ -78,12 +79,19 @@ static DEVICE_API(pwm, ing_pwm_api) = {
 	.get_cycles_per_sec = ing_pwm_get_cycles,
 };
 
+static int ing_pwm_init(const struct device *dev)
+{
+	ARG_UNUSED(dev);
+	ingchips_clock_enable(INGCHIPS_CLK_PWM);
+	return 0;
+}
+
 #define ING_PWM_DEFINE(inst, kind) \
 	static struct ing_pwm_data ing_pwm_data_##kind##_##inst; \
 	static const struct ing_pwm_config ing_pwm_cfg_##kind##_##inst = { \
 		.base = DT_INST_REG_ADDR(inst), .clock = DT_INST_PROP(inst, input_clock_frequency), \
 		.layout = kind }; \
-	DEVICE_DT_INST_DEFINE(inst, NULL, NULL, &ing_pwm_data_##kind##_##inst, \
+	DEVICE_DT_INST_DEFINE(inst, ing_pwm_init, NULL, &ing_pwm_data_##kind##_##inst, \
 		&ing_pwm_cfg_##kind##_##inst, POST_KERNEL, CONFIG_PWM_INIT_PRIORITY, &ing_pwm_api)
 
 #define DT_DRV_COMPAT ingchips_ing916_pwm

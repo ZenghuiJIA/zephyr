@@ -4,6 +4,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/gpio/gpio_utils.h>
 #include <zephyr/sys/sys_io.h>
+#include <clock_control.h>
 
 enum gpio_ingsoc_layout {
 	GPIO_INGSOC_916,
@@ -14,8 +15,20 @@ struct gpio_ingsoc_config {
 	struct gpio_driver_config common;
 	mem_addr_t base;
 	enum gpio_ingsoc_layout layout;
+	uint8_t instance;
 };
 struct gpio_ingsoc_data { struct gpio_driver_data common; };
+
+static int gpio_ingsoc_enable_clock(const struct gpio_ingsoc_config *cfg)
+{
+	ingchips_clock_enable(cfg->instance == 0U ? INGCHIPS_CLK_GPIO0 : INGCHIPS_CLK_GPIO1);
+	return 0;
+}
+
+static int gpio_ingsoc_init(const struct device *dev)
+{
+	return gpio_ingsoc_enable_clock(dev->config);
+}
 
 static inline uint32_t gpio_input_offset(const struct gpio_ingsoc_config *cfg)
 {
@@ -38,6 +51,12 @@ static int gpio_ingsoc_pin_configure(const struct device *dev, gpio_pin_t pin,
 	uint32_t direction;
 	uint32_t pull_enable;
 	uint32_t pull_type;
+	int ret;
+
+	ret = gpio_ingsoc_enable_clock(cfg);
+	if (ret < 0) {
+		return ret;
+	}
 
 	if (pin >= 32U) {
 		return -EINVAL;
@@ -93,8 +112,14 @@ static int gpio_ingsoc_port_set_masked_raw(const struct device *dev,
 					   gpio_port_value_t value)
 {
 	const struct gpio_ingsoc_config *cfg = dev->config;
-	uint32_t output = sys_read32(cfg->base + gpio_output_offset(cfg));
+	uint32_t output;
+	int ret = gpio_ingsoc_enable_clock(cfg);
 
+	if (ret < 0) {
+		return ret;
+	}
+
+	output = sys_read32(cfg->base + gpio_output_offset(cfg));
 	sys_write32((output & ~mask) | (value & mask), cfg->base + gpio_output_offset(cfg));
 	return 0;
 }
@@ -102,6 +127,12 @@ static int gpio_ingsoc_port_set_masked_raw(const struct device *dev,
 static int gpio_ingsoc_port_set_bits_raw(const struct device *dev, gpio_port_pins_t pins)
 {
 	const struct gpio_ingsoc_config *cfg = dev->config;
+	int ret = gpio_ingsoc_enable_clock(cfg);
+
+	if (ret < 0) {
+		return ret;
+	}
+
 	sys_write32(pins, cfg->base + (cfg->layout == GPIO_INGSOC_916 ? 0x30U : 0x14U));
 	return 0;
 }
@@ -109,6 +140,12 @@ static int gpio_ingsoc_port_set_bits_raw(const struct device *dev, gpio_port_pin
 static int gpio_ingsoc_port_clear_bits_raw(const struct device *dev, gpio_port_pins_t pins)
 {
 	const struct gpio_ingsoc_config *cfg = dev->config;
+	int ret = gpio_ingsoc_enable_clock(cfg);
+
+	if (ret < 0) {
+		return ret;
+	}
+
 	sys_write32(pins, cfg->base + (cfg->layout == GPIO_INGSOC_916 ? 0x2cU : 0x18U));
 	return 0;
 }
@@ -116,6 +153,12 @@ static int gpio_ingsoc_port_clear_bits_raw(const struct device *dev, gpio_port_p
 static int gpio_ingsoc_port_toggle_bits(const struct device *dev, gpio_port_pins_t pins)
 {
 	const struct gpio_ingsoc_config *cfg = dev->config;
+	int ret = gpio_ingsoc_enable_clock(cfg);
+
+	if (ret < 0) {
+		return ret;
+	}
+
 	if (cfg->layout == GPIO_INGSOC_918) {
 		sys_write32(pins, cfg->base + 0x1cU);
 	} else {
@@ -149,9 +192,10 @@ static DEVICE_API(gpio, gpio_ingsoc_api) = {
 		.common = {.port_pin_mask = GPIO_PORT_PIN_MASK_FROM_DT_INST(inst)}, \
 		.base = DT_INST_REG_ADDR(inst),                                \
 		.layout = kind,                                                \
+		.instance = inst,                                              \
 	};                                                                       \
 	static struct gpio_ingsoc_data gpio_ingsoc_data_##kind##_##inst;         \
-	DEVICE_DT_INST_DEFINE(inst, NULL, NULL,                                  \
+	DEVICE_DT_INST_DEFINE(inst, gpio_ingsoc_init, NULL,                     \
 			      &gpio_ingsoc_data_##kind##_##inst,                 \
 			      &gpio_ingsoc_config_##kind##_##inst, POST_KERNEL,   \
 			      CONFIG_GPIO_INIT_PRIORITY, &gpio_ingsoc_api);

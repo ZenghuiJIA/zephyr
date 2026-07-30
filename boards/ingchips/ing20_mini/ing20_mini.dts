@@ -1,10 +1,32 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /dts-v1/;
 #include <ingchips/ing20xx.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
 / {
 	model = "INGCHIPS ING20 Mini";
 	compatible = "ingchips,ing20-mini";
+
+	aliases {
+		led0 = &led0;
+		led1 = &led1;
+	};
+
 	chosen { zephyr,console = &uart0; zephyr,shell-uart = &uart0; };
+
+	leds {
+		compatible = "gpio-leds";
+
+		led0: led_0 {
+			gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
+			label = "IO21 LED";
+		};
+
+		led1: led_1 {
+			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+			label = "IO22 LED";
+		};
+	};
 };
 &uart0 { status = "okay"; };
 &gpio0 { status = "okay"; };

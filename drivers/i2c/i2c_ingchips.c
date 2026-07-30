@@ -4,6 +4,7 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/sys_io.h>
+#include <clock_control.h>
 
 #define I2C916_STATUS       0x18
 #define I2C916_ADDR         0x1c
@@ -46,6 +47,7 @@ struct ing_i2c_config {
 	uintptr_t base;
 	uint32_t pclk;
 	enum ing_i2c_layout layout;
+	uint8_t instance;
 };
 
 struct ing_i2c_data {
@@ -224,7 +226,9 @@ static int ing_i2c_get_config(const struct device *dev, uint32_t *cfg)
 
 static int ing_i2c_init(const struct device *dev)
 {
+	const struct ing_i2c_config *c = dev->config;
 	struct ing_i2c_data *d = dev->data;
+	ingchips_clock_enable(c->instance == 0U ? INGCHIPS_CLK_I2C0 : INGCHIPS_CLK_I2C1);
 	k_mutex_init(&d->lock);
 	return ing_i2c_configure(dev, I2C_MODE_CONTROLLER | I2C_SPEED_SET(I2C_SPEED_STANDARD));
 }
@@ -241,6 +245,7 @@ static DEVICE_API(i2c, ing_i2c_api) = {
 		.base = DT_INST_REG_ADDR(inst), \
 		.pclk = DT_INST_PROP(inst, input_clock_frequency), \
 		.layout = compat_layout, \
+		.instance = inst, \
 	}; \
 	I2C_DEVICE_DT_INST_DEFINE(inst, ing_i2c_init, NULL, \
 		&ing_i2c_data_##compat_layout##_##inst, &ing_i2c_cfg_##compat_layout##_##inst, \

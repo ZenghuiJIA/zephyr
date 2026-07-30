@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/sys_io.h>
 #include <zephyr/sys/util.h>
+#include <clock_control.h>
 
 #define SADC_CFG0          0x00U
 #define SADC_CFG1          0x04U
@@ -158,6 +159,7 @@ static int adc_ingsoc_init(const struct device *dev)
 	const struct adc_ingsoc_config *cfg = dev->config;
 	struct adc_ingsoc_data *data = dev->data;
 
+	ingchips_clock_enable(INGCHIPS_CLK_ADC);
 	k_mutex_init(&data->lock);
 	sys_clear_bits(cfg->base + SADC_CFG0, SADC_CFG0_RESET_N);
 	sys_write32(0x100U, cfg->base + SADC_CFG1);

@@ -90,6 +90,13 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,z_arm_reset)
  */
 SECTION_SUBSEC_FUNC(TEXT,_reset_section,__start)
 
+#if defined(CONFIG_INGCHIPS_PLATFORM_OS)
+    /* The SDK platform calls the application's reset vector as a function.
+     * Preserve its stack and return address before generic Zephyr reset code
+     * has a chance to replace MSP. */
+    b .L_ingchips_reset
+#endif
+
 #if defined(CONFIG_INIT_ARCH_HW_AT_BOOT)
     /* Reset CONTROL register */
     movs.n r0, #0
@@ -214,6 +221,7 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,__start)
     ldr r1, =CONFIG_ISR_STACK_SIZE + MPU_GUARD_ALIGN_AND_SIZE
     adds r0, r0, r1
     msr PSP, r0
+#if !defined(CONFIG_INGCHIPS_PLATFORM_OS)
     mrs r0, CONTROL
     movs r1, #(2 | CONTROL_ARM_PAC_MASK | CONTROL_ARM_BTI_MASK)
     orrs r0, r1 /* CONTROL_SPSEL_Msk */
@@ -231,3 +239,32 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,__start)
      * (even though we do not intend to return).
      */
     bl z_prep_c
+#endif /* !CONFIG_INGCHIPS_PLATFORM_OS */
+
+#if defined(CONFIG_INGCHIPS_PLATFORM_OS)
+.L_ingchips_reset:
+    /* Keep the platform-owned MSP and exception context intact. */
+    push {r1, lr}
+
+    ldr r1, =__data_load_start
+    ldr r2, =_image_ram_start
+    ldr r3, =__data_region_end
+.L_ingchips_copy_data:
+    cmp r2, r3
+    bge .L_ingchips_clear_bss
+    ldr r0, [r1], #4
+    str r0, [r2], #4
+    b .L_ingchips_copy_data
+.L_ingchips_clear_bss:
+    ldr r1, =__bss_start
+    ldr r2, =__bss_end
+    movs r0, #0
+.L_ingchips_clear_bss_loop:
+    cmp r1, r2
+    bge .L_ingchips_call_app
+    str r0, [r1], #4
+    b .L_ingchips_clear_bss_loop
+.L_ingchips_call_app:
+    bl app_main
+    pop {r1, pc}
+#endif /* CONFIG_INGCHIPS_PLATFORM_OS */

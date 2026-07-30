@@ -4,6 +4,7 @@
 #include <zephyr/drivers/watchdog.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/sys_io.h>
+#include <clock_control.h>
 #include <platform_api.h>
 
 enum ing_wdt_layout { ING_WDT_916, ING_WDT_918 };
@@ -126,6 +127,7 @@ static void ing_wdt_register_callback(const struct device *dev)
 
 static int ing_wdt_init(const struct device *dev)
 {
+	ingchips_clock_enable(INGCHIPS_CLK_WDT);
 	ing_wdt_register_callback(dev);
 #ifdef CONFIG_WDT_DISABLE_AT_BOOT
 	return ing_wdt_disable(dev);

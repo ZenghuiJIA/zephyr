@@ -5,6 +5,7 @@
 #include <zephyr/drivers/i2s.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/sys_io.h>
+#include <clock_control.h>
 
 #define MODE 0x00
 #define CLKDIV 0x04
@@ -154,6 +155,7 @@ static int ing_i2s_init(const struct device *dev)
 {
 	const struct ing_i2s_config *c = dev->config;
 	struct ing_i2s_data *d = dev->data;
+	ingchips_clock_enable(INGCHIPS_CLK_I2S);
 	k_mutex_init(&d->lock);
 	sys_write32(BIT(6) | BIT(7), c->base + CONFIG);
 	sys_write32(0, c->base + MODE);

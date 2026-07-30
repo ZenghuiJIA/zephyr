@@ -1,10 +1,18 @@
 tests:
+  drivers.ingchips.build_all.ing20:
+    build_only: true
+    platform_allow:
+      - ing20_mini/ing20xx
+    extra_args:
+      - DTC_OVERLAY_FILE=ing20.overlay
+      - EXTRA_CONF_FILE=dma.conf
   drivers.ingchips.build_all.ing9168:
     build_only: true
     platform_allow:
       - ing9168_mini/ing9168
     extra_args:
       - DTC_OVERLAY_FILE=ing9168.overlay
+      - EXTRA_CONF_FILE=dma.conf
   drivers.ingchips.build_all.ing9188:
     build_only: true
     platform_allow:

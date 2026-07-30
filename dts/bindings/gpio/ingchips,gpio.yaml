@@ -4,3 +4,7 @@ include: [gpio-controller.yaml, base.yaml]
 properties:
   reg:
     required: true
+
+gpio-cells:
+  - pin
+  - flags

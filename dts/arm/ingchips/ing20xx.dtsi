@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <arm/armv7-m.dtsi>
+#include <zephyr/dt-bindings/dma/ingchips-dma.h>
 
 / {
 	chosen { zephyr,flash = &flash0; zephyr,sram = &sram0; };
@@ -14,21 +15,40 @@
 	flash0: flash@202a000 { compatible = "soc-nv-flash"; reg = <0x0202a000 0x56000>; };
 	soc {
 		compatible = "simple-bus";
+		dma0: dma@4000c000 {
+			compatible = "ingchips,dma";
+			reg = <0x4000c000 0x140>, <0x40000000 0x38>;
+			reg-names = "dma", "sysctrl";
+			dma-controller;
+			#dma-cells = <2>;
+			dma-channels = <8>;
+			dma-requests = <16>;
+			dma-buf-addr-alignment = <1>;
+			dma-buf-size-alignment = <1>;
+			dma-copy-alignment = <1>;
+			status = "okay";
+		};
 		uart0: serial@40011000 {
 			compatible = "ingchips,uart"; reg = <0x40011000 0x4c>;
+			dmas = <&dma0 0 INGCHIPS_DMA_REQ_UART0_RX>,
+			       <&dma0 1 INGCHIPS_DMA_REQ_UART0_TX>;
+			dma-names = "rx", "tx";
 			clock-frequency = <12000000>; current-speed = <115200>; status = "disabled";
 		};
 		uart1: serial@40012000 {
 			compatible = "ingchips,uart"; reg = <0x40012000 0x4c>;
+			dmas = <&dma0 2 INGCHIPS_DMA_REQ_UART1_RX>,
+			       <&dma0 3 INGCHIPS_DMA_REQ_UART1_TX>;
+			dma-names = "rx", "tx";
 			clock-frequency = <12000000>; current-speed = <115200>; status = "disabled";
 		};
 		gpio0: gpio@40015000 {
 			compatible = "ingchips,ing916-gpio"; reg = <0x40015000 0x78>;
-			gpio-controller; #gpio-cells = <2>; ngpios = <32>; status = "disabled";
+			gpio-controller; #gpio-cells = <2>; ngpios = <21>; status = "disabled";
 		};
 		gpio1: gpio@40016000 {
 			compatible = "ingchips,ing916-gpio"; reg = <0x40016000 0x78>;
-			gpio-controller; #gpio-cells = <2>; ngpios = <32>; status = "disabled";
+			gpio-controller; #gpio-cells = <2>; ngpios = <15>; status = "disabled";
 		};
 		adc0: adc@4000f000 {
 			compatible = "ingchips,ing916-adc";

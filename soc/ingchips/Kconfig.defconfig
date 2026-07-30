@@ -1,4 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
+
+if INGCHIPS_PLATFORM_OS
+
+config HEAP_MEM_POOL_SIZE
+	default 4096
+
+endif
+
 rsource "ing916/Kconfig.defconfig"
 rsource "ing20/Kconfig.defconfig"
 rsource "ing918/Kconfig.defconfig"

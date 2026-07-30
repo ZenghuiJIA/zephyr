@@ -536,7 +536,7 @@ void __weak z_early_rand_get(uint8_t *buf, size_t length)
  */
 __boot_func
 FUNC_NO_STACK_PROTECTOR
-FUNC_NORETURN void z_cstart(void)
+void z_cstart_prepare(void)
 {
 	/* gcov hook needed to get the coverage report.*/
 	gcov_static_init();
@@ -544,8 +544,12 @@ FUNC_NORETURN void z_cstart(void)
 	/* initialize early init calls */
 	z_sys_init_run_level(INIT_LEVEL_EARLY);
 
-	/* perform any architecture-specific initialization */
+	/* The INGchips platform still owns the exception vectors while the
+	 * preparation phase returns its OS driver. Finish ARM kernel setup only
+	 * when the platform invokes os_start(). */
+#if !defined(CONFIG_INGCHIPS_PLATFORM_OS)
 	arch_kernel_init();
+#endif
 
 	LOG_CORE_INIT();
 
@@ -588,6 +592,14 @@ FUNC_NORETURN void z_cstart(void)
 	timing_start();
 #endif /* CONFIG_TIMING_FUNCTIONS_NEED_AT_BOOT */
 
+}
+
+FUNC_NORETURN void z_cstart_start(void)
+{
+#if defined(CONFIG_INGCHIPS_PLATFORM_OS)
+	arch_kernel_init();
+#endif
+
 #ifdef CONFIG_MULTITHREADING
 	switch_to_main_thread(prepare_multithreading());
 #else
@@ -617,4 +629,12 @@ FUNC_NORETURN void z_cstart(void)
 	 */
 
 	CODE_UNREACHABLE; /* LCOV_EXCL_LINE */
+}
+
+__boot_func
+FUNC_NO_STACK_PROTECTOR
+FUNC_NORETURN void z_cstart(void)
+{
+	z_cstart_prepare();
+	z_cstart_start();
 }
