@@ -29,7 +29,7 @@ int main(void)
 		}
 	}
 
-	printk("Blinking ING916 IO22 and IO23\n");
+	printk("Blinking ING916 board LEDs (IO22 and IO23)\n");
 
 	while (true) {
 		for (size_t i = 0; i < ARRAY_SIZE(leds); i++) {

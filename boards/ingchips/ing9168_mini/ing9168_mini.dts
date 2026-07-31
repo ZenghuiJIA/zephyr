@@ -1,9 +1,30 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /dts-v1/;
 #include <ingchips/ing9168.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
 / {
 	model = "INGCHIPS ING9168 Mini";
 	compatible = "ingchips,ing9168-mini";
+
+	aliases {
+		led0 = &led0;
+		led1 = &led1;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led0: led_0 {
+			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+			label = "ING916 IO22 LED";
+		};
+
+		led1: led_1 {
+			gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+			label = "ING916 IO23 LED";
+		};
+	};
+
 	chosen { zephyr,console = &uart0; zephyr,shell-uart = &uart0; };
 };
 &uart0 { status = "okay"; };
