@@ -1,6 +1,15 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <arm/armv7-m.dtsi>
 
+#ifndef INGCHIPS_APP_FLASH_BASE
+#define INGCHIPS_APP_FLASH_BASE 0x00026000
+#define INGCHIPS_APP_FLASH_BASE_UNIT 26000
+#define INGCHIPS_APP_FLASH_SIZE 0x5a000
+#define INGCHIPS_APP_RAM_BASE 0x20000a50
+#define INGCHIPS_APP_RAM_BASE_UNIT 20000a50
+#define INGCHIPS_APP_RAM_SIZE 0xf5b0
+#endif
+
 / {
 	chosen { zephyr,flash = &flash0; zephyr,sram = &sram0; };
 	cpus {
@@ -10,8 +19,14 @@
 			clock-frequency = <12000000>;
 		};
 	};
-	sram0: memory@20000a50 { compatible = "mmio-sram"; reg = <0x20000a50 0xf5b0>; };
-	flash0: flash@26000 { compatible = "soc-nv-flash"; reg = <0x00026000 0x5a000>; };
+	sram0: memory@INGCHIPS_APP_RAM_BASE_UNIT {
+		compatible = "mmio-sram";
+		reg = <INGCHIPS_APP_RAM_BASE INGCHIPS_APP_RAM_SIZE>;
+	};
+	flash0: flash@INGCHIPS_APP_FLASH_BASE_UNIT {
+		compatible = "soc-nv-flash";
+		reg = <INGCHIPS_APP_FLASH_BASE INGCHIPS_APP_FLASH_SIZE>;
+	};
 	soc {
 		compatible = "simple-bus";
 		uart0: serial@40020000 {

@@ -2,6 +2,15 @@
 #include <arm/armv7-m.dtsi>
 #include <zephyr/dt-bindings/dma/ingchips-dma.h>
 
+#ifndef INGCHIPS_APP_FLASH_BASE
+#define INGCHIPS_APP_FLASH_BASE 0x02028000
+#define INGCHIPS_APP_FLASH_BASE_UNIT 2028000
+#define INGCHIPS_APP_FLASH_SIZE 0x58000
+#define INGCHIPS_APP_RAM_BASE 0x20004948
+#define INGCHIPS_APP_RAM_BASE_UNIT 20004948
+#define INGCHIPS_APP_RAM_SIZE 0x96b8
+#endif
+
 / {
 	chosen { zephyr,flash = &flash0; zephyr,sram = &sram0; };
 	cpus {
@@ -11,8 +20,14 @@
 			clock-frequency = <12000000>;
 		};
 	};
-	sram0: memory@20004948 { compatible = "mmio-sram"; reg = <0x20004948 0x96b8>; };
-	flash0: flash@2028000 { compatible = "soc-nv-flash"; reg = <0x02028000 0x58000>; };
+	sram0: memory@INGCHIPS_APP_RAM_BASE_UNIT {
+		compatible = "mmio-sram";
+		reg = <INGCHIPS_APP_RAM_BASE INGCHIPS_APP_RAM_SIZE>;
+	};
+	flash0: flash@INGCHIPS_APP_FLASH_BASE_UNIT {
+		compatible = "soc-nv-flash";
+		reg = <INGCHIPS_APP_FLASH_BASE INGCHIPS_APP_FLASH_SIZE>;
+	};
 	soc {
 		compatible = "simple-bus";
 		dma0: dma@4000c000 {
