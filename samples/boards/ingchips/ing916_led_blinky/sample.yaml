@@ -1,0 +1,14 @@
+sample:
+  name: ING916 dual LED blinky
+  description: Blink LEDs connected to ING916 IO22 and IO23 using the Zephyr GPIO API.
+common:
+  build_only: true
+  integration_platforms:
+    - ing9168_mini/ing9168
+  platform_allow:
+    - ing9168_mini/ing9168
+  tags:
+    - gpio
+    - led
+tests:
+  sample.boards.ingchips.ing916_led_blinky: {}
