@@ -19,12 +19,12 @@
 
 		led0: led_0 {
 			gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
-			label = "IO21 LED";
+			label = "ING20 IO21 LED";
 		};
 
 		led1: led_1 {
 			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
-			label = "IO22 LED";
+			label = "ING20 IO22 LED";
 		};
 	};
 };
