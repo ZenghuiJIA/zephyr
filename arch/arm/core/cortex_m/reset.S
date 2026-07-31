@@ -243,8 +243,18 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,__start)
 
 #if defined(CONFIG_INGCHIPS_PLATFORM_OS)
 .L_ingchips_reset:
-    /* Keep the platform-owned MSP and exception context intact. */
-    push {r1, lr}
+    /* app_main() calls arch_kernel_init(), which replaces MSP with Zephyr's
+     * interrupt stack. Run the application bootstrap on PSP so its call frame
+     * survives that change, then restore the platform MSP before returning. */
+    push {r4, r5}
+    mrs r4, MSP
+    mov r5, lr
+    msr PSP, r4
+    mrs r0, CONTROL
+    movs r1, #2
+    orrs r0, r1
+    msr CONTROL, r0
+    isb
 
     ldr r1, =__data_load_start
     ldr r2, =_image_ram_start
@@ -266,5 +276,13 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,__start)
     b .L_ingchips_clear_bss_loop
 .L_ingchips_call_app:
     bl app_main
-    pop {r1, pc}
+    mrs r2, CONTROL
+    movs r1, #2
+    bics r2, r1
+    msr CONTROL, r2
+    isb
+    msr MSP, r4
+    mov lr, r5
+    pop {r4, r5}
+    bx lr
 #endif /* CONFIG_INGCHIPS_PLATFORM_OS */

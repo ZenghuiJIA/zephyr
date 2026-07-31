@@ -121,8 +121,12 @@ endif()
 
 zephyr_include_directories(
   "${INGCHIPS_STARTUP_DIR}"
+  "${ING_SDK_BASE}/src/BSP"
+  "${ING_SDK_BASE}/src/FWlib"
   "${ING_SDK_BASE}/src/Tools"
   "${ING_SDK_BASE}/bundles/noos_mini/inc")
+zephyr_sources_ifdef(CONFIG_SOC_ING20XX
+  "${ING_SDK_BASE}/src/FWlib/peripheral_sysctrl.c")
 target_link_options(app PUBLIC "-Wl,--just-symbols=${INGCHIPS_SYMDEFS}")
 
 set_property(GLOBAL PROPERTY INGCHIPS_PLATFORM_BIN "${INGCHIPS_PLATFORM_BIN}")

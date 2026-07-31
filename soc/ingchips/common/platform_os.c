@@ -5,6 +5,9 @@
 
 #include <platform_api.h>
 #include <port_gen_os_driver.h>
+#if defined(CONFIG_SOC_ING20XX)
+#include <peripheral_sysctrl.h>
+#endif
 
 struct ingchips_timer {
 	struct k_timer timer;
@@ -126,6 +129,39 @@ static void event_set(gen_handle_t event)
 static unsigned int critical_keys[CRITICAL_NESTING_MAX];
 static unsigned int critical_nesting;
 
+#define PLATFORM_BOOT_HEAP_SIZE 1024
+static uint8_t platform_boot_heap[PLATFORM_BOOT_HEAP_SIZE] __aligned(sizeof(uintptr_t));
+static size_t platform_boot_heap_used;
+static bool kernel_started;
+
+static void *platform_malloc(uint32_t size)
+{
+	if (kernel_started) {
+		return k_malloc(size);
+	}
+
+	size_t aligned_size = ROUND_UP(size, sizeof(uintptr_t));
+
+	if (aligned_size > PLATFORM_BOOT_HEAP_SIZE - platform_boot_heap_used) {
+		return NULL;
+	}
+
+	void *ptr = &platform_boot_heap[platform_boot_heap_used];
+
+	platform_boot_heap_used += aligned_size;
+	return ptr;
+}
+
+static void platform_free(void *ptr)
+{
+	if (ptr >= (void *)platform_boot_heap &&
+	    ptr < (void *)(platform_boot_heap + sizeof(platform_boot_heap))) {
+		return;
+	}
+
+	k_free(ptr);
+}
+
 static void enter_critical(void)
 {
 	__ASSERT_NO_MSG(critical_nesting < ARRAY_SIZE(critical_keys));
@@ -146,6 +182,8 @@ extern void sys_clock_isr(void);
 
 static FUNC_NORETURN void os_start(void)
 {
+	kernel_started = true;
+
 	__asm__ volatile(
 		"mrs r0, CONTROL\n"
 		"orr r0, r0, #2\n"
@@ -169,8 +207,8 @@ static const gen_os_driver_t zephyr_os_driver = {
 	.event_create = event_create,
 	.event_wait = event_wait,
 	.event_set = event_set,
-	.malloc = k_malloc,
-	.free = k_free,
+	.malloc = platform_malloc,
+	.free = platform_free,
 	.enter_critical = enter_critical,
 	.leave_critical = leave_critical,
 	.os_start = os_start,
@@ -181,6 +219,9 @@ static const gen_os_driver_t zephyr_os_driver = {
 
 uintptr_t app_main(void)
 {
+#if defined(CONFIG_SOC_ING20XX)
+	SYSCTRL_Init();
+#endif
 	z_cstart_prepare();
 	return (uintptr_t)&zephyr_os_driver;
 }
